@@ -100,15 +100,15 @@ const client = new Client();
 Deno.serve(async (/**@type{Request}*/ req) => {
   const url = new URL(req.url);
   const reference = new Reference(url.pathname.slice(1));
-  const { blob } = Object.fromEntries(url.searchParams);
-  if (blob != null) {
+  const { type } = Object.fromEntries(url.searchParams);
+  if (type === "blob") {
     const res = await client.fetch(reference, "blobs", { redirect: "manual" });
     return res;
   } else {
     const res = await client.fetchManifest(reference);
     reference.digest = res.layers[0].digest;
     url.pathname = `/${reference}`;
-    url.searchParams.set("blob", "");
+    url.searchParams.set("type", "blob");
     return Response.redirect(url);
   }
 });
